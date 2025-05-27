@@ -49,8 +49,11 @@ function FormTopic({ data: { type, visible, info }, onClear }) {
   const handleSubmit = () => {
     const tmpKey = Object.keys(_omit(data, ["nameessay", "contentessay"]));
     let validates = true;
+    // Regex to match only the 11-character YouTube video ID
+    const youtubeIdRegex = /^[a-zA-Z0-9_-]{11}$/;
+
     tmpKey.forEach((key) => {
-      if (data[key] === "") {
+      if (key !== 'video' && data[key] === "") { // Exclude video from empty check initially
         setError((prevError) => ({
           ...prevError,
           [key]: `${_capitalize(key)} required`,
@@ -58,6 +61,22 @@ function FormTopic({ data: { type, visible, info }, onClear }) {
         validates = false;
       }
     });
+
+    // Specific validation for video field to check for 11-character ID
+    if (data.video === "") {
+       setError((prevError) => ({
+          ...prevError,
+          video: "Video ID required",
+        }));
+        validates = false;
+    } else if (!youtubeIdRegex.test(data.video)) {
+      setError((prevError) => ({
+        ...prevError,
+        video: "Invalid YouTube Video ID (must be 11 characters)",
+      }));
+      validates = false;
+    }
+
     if (validates) {
       if (type === "create") onAddTopic(data);
       if (type === "edit") onEditTopic(data);

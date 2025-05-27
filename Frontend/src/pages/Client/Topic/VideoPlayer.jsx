@@ -10,7 +10,9 @@ const VideoPlayer = ({ item, is_showing }) => {
   const ref = useRef();
 
   useEffect(() => {
-    ref?.current?.internalPlayer?.stopVideo();
+    if (ref.current && ref.current.internalPlayer) {
+      ref.current.internalPlayer.stopVideo();
+    }
   }, [is_showing]);
 
   return <YouTube videoId={item.video} opts={opts} ref={ref} />;

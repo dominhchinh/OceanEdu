@@ -28,7 +28,10 @@ function Lesson() {
     data: { user },
   } = useSelector((state) => state.loginReducer);
 
-  const { list: listTopic } = useSelector((state) => state.topicReducer);
+  const {
+    list: listTopic,
+    actionStatus: topicActionStatus,
+  } = useSelector((state) => state.topicReducer);
   const { list: listUser } = useSelector((state) => state.userReducer);
 
   console.log('data: ', list, params, meta)
@@ -41,7 +44,7 @@ function Lesson() {
   const onResetData = () => dispatch(resetData());
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [topic, setTopic] = useState(null);
+  const [topic, setTopic] = useState(0);
   const [detail, setDetail] = useState({
     info: {},
     visible: false,
@@ -57,11 +60,14 @@ function Lesson() {
     if (!isLoading) {
       onGetListLesson(params);
       onGetListUser({ page: 1, limit: 50 });
-      onGetListTopic({ page: 1, limit: 10 });
     }
     return () => {
       onResetData();
     };
+  }, []);
+
+  useEffect(() => {
+    onGetListTopic({ page: 1, limit: 1000 });
   }, []);
 
   useEffect(() => {
@@ -85,10 +91,10 @@ function Lesson() {
     return array.find((item) => item.id === id);
   };
   const handleSearch = (id) => {
-    const idtopic = !+id ? null : id;
+    const idtopic = id === 0 ? null : id;
     onGetListLesson({ ...params, page: 1, idtopic: idtopic });
     setCurrentPage(1);
-    if (!idtopic) setTopic(id);
+    setTopic(id);
   };
   return (
     <div className="mb-5">
