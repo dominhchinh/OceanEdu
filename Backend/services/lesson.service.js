@@ -22,13 +22,19 @@ exports.findAll = (page, limit, query, idtopic) => {
   console.log(idtopic);
   const skip = (page - 1) * limit;
 
+  const whereCondition = {
+    name: { [Op.like]: `%${query}%` },
+  };
+
+  // Add idtopic filter only if idtopic is not null
+  if (idtopic !== null) {
+    whereCondition.idtopic = idtopic;
+  }
+
   return LessonModel.findAll({
     limit: +limit,
     offset: skip,
-    where: {
-      ...(!!idtopic ? { idtopic } : {}),
-      name: { [Op.like]: `%${query}%` },
-    },
+    where: whereCondition,
   });
 };
 
