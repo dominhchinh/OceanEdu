@@ -2,6 +2,7 @@ const QuestionService = require("../services/question.service");
 const TopicService = require("../services/topic.service");
 const CategoryService = require("../services/category.service");
 const AuthService = require("../services/auth.service");
+const QuizService = require("../services/quiz.service");
 const fs = require("fs");
 
 exports.create = async (req, res) => {
@@ -99,6 +100,18 @@ exports.delete = async (req, res) => {
       message: "Unauthorized",
       status: false,
     });
+  }
+
+  // Check if question is used in any quiz
+  const quizzes = await QuizService.findAll(1, 1000, "", null, null);
+  for (const quiz of quizzes) {
+    const questionIds = JSON.parse(quiz.groupquestion);
+    if (questionIds.includes(parseInt(req.params.id))) {
+      return res.status(400).json({
+        message: "Không thể xóa câu hỏi này vì đang được sử dụng trong bài kiểm tra.",
+        status: false,
+      });
+    }
   }
 
   await QuestionService.deleteQuestion(req.params.id);

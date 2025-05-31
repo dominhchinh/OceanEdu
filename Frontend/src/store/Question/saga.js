@@ -139,7 +139,7 @@ function* callApiDelete({ id }) {
       yield put(actionDeleteFailed());
       yield put(
         addToast({
-          text: "Delete question failed",
+          text: response.data.message || "Delete question failed",
           type: "danger",
           title: "",
         })
@@ -149,7 +149,7 @@ function* callApiDelete({ id }) {
     yield put(actionDeleteFailed(error.response.data.error));
     yield put(
       addToast({
-        text: "Delete question failed",
+        text: error.response.data.message || error.response.data.error || "Delete question failed",
         type: "danger",
         title: "",
       })

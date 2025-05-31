@@ -1,4 +1,5 @@
 const CategoryService = require("../services/category.service");
+const QuestionService = require("../services/question.service");
 
 exports.create = async (req, res) => {
   if (__roleId == 3) {
@@ -59,6 +60,15 @@ exports.delete = async (req, res) => {
   if (__roleId == 3) {
     return res.status(400).json({
       message: "Unauthorized",
+      status: false,
+    });
+  }
+
+  // Check if category has questions
+  const questions = await QuestionService.findAll(1, 1, "", null, req.params.id);
+  if (questions.length > 0) {
+    return res.status(400).json({
+      message: "Không thể xóa danh mục này vì đang có câu hỏi liên quan.",
       status: false,
     });
   }

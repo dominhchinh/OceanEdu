@@ -1,4 +1,5 @@
 const TopicService = require("../services/topic.service");
+const LessonService = require("../services/lesson.service");
 
 exports.create = async (req, res) => {
   if (__roleId == 3) {
@@ -68,6 +69,15 @@ exports.delete = async (req, res) => {
   if (__roleId == 3) {
     return res.status(400).json({
       message: "Unauthorized",
+      status: false,
+    });
+  }
+
+  // Check if topic has lessons
+  const lessons = await LessonService.findAll(1, 1, "", req.params.id);
+  if (lessons.length > 0) {
+    return res.status(400).json({
+      message: "Không thể xóa chủ đề này vì đang có bài học liên quan.",
       status: false,
     });
   }
