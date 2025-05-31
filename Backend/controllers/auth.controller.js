@@ -38,6 +38,10 @@ exports.login = async (req, res) => {
   const user = await AuthService.findUserByEmail(req.body.email);
   console.log(user);
   if (user != null) {
+    // Check if account is active
+    if (!user.active) {
+      return res.status(400).json({ message: "Tài khoản đã bị vô hiệu hóa." });
+    }
     const isMatched = await bcryptUtil.compareHash(
       req.body.password,
       user.password
